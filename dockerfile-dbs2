@@ -69,17 +69,22 @@ RUN bash $INST_SCRIPTS/mongodb/install_mongodb.sh && rm -rf $INST_SCRIPTS/mongod
 COPY ./src/dbs2/install/oracle_sql_developer $INST_SCRIPTS/oracle_sql_developer/
 RUN bash $INST_SCRIPTS/oracle_sql_developer/install_oracle_sql_developer.sh && rm -rf $INST_SCRIPTS/oracle_sql_developer/
 
+### Install MySQL-Workbench
+COPY ./src/dbs2/install/mysql-workbench $INST_SCRIPTS/mysql-workbench/
+RUN bash $INST_SCRIPTS/mysql-workbench/install_mysql-workbench.sh && rm -rf $INST_SCRIPTS/mysql-workbench/
+
 ### Applications in opt
 COPY ./src/dbs2/install/_opt/sqldeveloper /opt/sqldeveloper/
 RUN chown 1000:0 /opt/sqldeveloper
 
 ### Data in home
+COPY ./src/dbs2/install/_home/.vscode $HOME/.vscode
 COPY ./src/dbs2/install/_home/basex $HOME/basex
 
 ### Sudo
 RUN apt-get update \  
   && apt-get install -y sudo \
-  && echo 'kasm-user ALL=(ALL) NOPASSWD: ALL' >>/etc/sudoers \
+  && echo 'mki ALL=(ALL) NOPASSWD: ALL' >>/etc/sudoers \
   && rm -rf /var/lib/apt/list/*
 
 ### Configuration
@@ -88,7 +93,7 @@ RUN $STARTUPDIR/set_user_permission.sh $HOME
 
 RUN chown 1000:0 $HOME
 
-ENV HOME /home/kasm-user
+ENV HOME /home/mki
 WORKDIR $HOME
 RUN mkdir -p $HOME && chown -R 1000:0 $HOME
 
