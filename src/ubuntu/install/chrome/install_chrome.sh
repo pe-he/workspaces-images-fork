@@ -10,18 +10,22 @@ if [ "$ARCH" == "arm64" ] ; then
   exit 0
 fi	
 
-if [[ "${DISTRO}" == @(centos|oracle7|oracle8) ]]; then
+if [[ "${DISTRO}" == @(centos|oracle8|rockylinux9|rockylinux8|oracle9|almalinux9|almalinux8) ]]; then
   if [ ! -z "${CHROME_VERSION}" ]; then
     wget https://dl.google.com/linux/chrome/rpm/stable/x86_64/google-chrome-stable-${CHROME_VERSION}.x86_64.rpm -O chrome.rpm
   else
     wget https://dl.google.com/linux/direct/google-chrome-stable_current_x86_64.rpm -O chrome.rpm
   fi
-  if [ "${DISTRO}" == "oracle8" ]; then
+  if [[ "${DISTRO}" == @(oracle8|rockylinux9|rockylinux8|oracle9|almalinux9|almalinux8) ]]; then
     dnf localinstall -y chrome.rpm
-    dnf clean all
+    if [ -z ${SKIP_CLEAN+x} ]; then
+      dnf clean all
+    fi
   else
     yum localinstall -y chrome.rpm
-    yum clean all
+    if [ -z ${SKIP_CLEAN+x} ]; then
+      yum clean all
+    fi
   fi
   rm chrome.rpm
 elif [ "${DISTRO}" == "opensuse" ]; then
@@ -30,10 +34,11 @@ elif [ "${DISTRO}" == "opensuse" ]; then
   rpm --import linux_signing_key.pub
   rm linux_signing_key.pub
   zypper install -yn google-chrome-stable
-  zypper clean --all
+  if [ -z ${SKIP_CLEAN+x} ]; then
+    zypper clean --all
+  fi
 else
   apt-get update
-  apt-get remove -y chromium-browser-l10n chromium-codecs-ffmpeg chromium-browser
   if [ ! -z "${CHROME_VERSION}" ]; then
     wget https://dl.google.com/linux/chrome/deb/pool/main/g/google-chrome-stable/google-chrome-stable_${CHROME_VERSION}_amd64.deb -O chrome.deb
   else
@@ -41,6 +46,12 @@ else
   fi
   apt-get install -y ./chrome.deb
   rm chrome.deb
+  if [ -z ${SKIP_CLEAN+x} ]; then
+    apt-get autoclean
+    rm -rf \
+      /var/lib/apt/lists/* \
+      /var/tmp/*
+  fi
 fi
 
 sed -i 's/-stable//g' /usr/share/applications/google-chrome.desktop
@@ -52,6 +63,9 @@ chmod +x $HOME/Desktop/google-chrome.desktop
 mv /usr/bin/google-chrome /usr/bin/google-chrome-orig
 cat >/usr/bin/google-chrome <<EOL
 #!/usr/bin/env bash
+if ! pgrep chrome > /dev/null;then
+  rm -f \$HOME/.config/google-chrome/Singleton*
+fi
 sed -i 's/"exited_cleanly":false/"exited_cleanly":true/' ~/.config/google-chrome/Default/Preferences
 sed -i 's/"exit_type":"Crashed"/"exit_type":"None"/' ~/.config/google-chrome/Default/Preferences
 if [ -f /opt/VirtualGL/bin/vglrun ] && [ ! -z "\${KASM_EGL_CARD}" ] && [ ! -z "\${KASM_RENDERD}" ] && [ -O "\${KASM_RENDERD}" ] && [ -O "\${KASM_EGL_CARD}" ] ; then
@@ -65,7 +79,7 @@ EOL
 chmod +x /usr/bin/google-chrome
 cp /usr/bin/google-chrome /usr/bin/chrome
 
-if [[ "${DISTRO}" == @(centos|oracle7|oracle8|opensuse) ]]; then
+if [[ "${DISTRO}" == @(centos|oracle8|rockylinux9|rockylinux8|oracle9|almalinux9|almalinux8|opensuse) ]]; then
   cat >> $HOME/.config/mimeapps.list <<EOF
     [Default Applications]
     x-scheme-handler/http=google-chrome.desktop
@@ -81,7 +95,7 @@ if [[ "${DISTRO}" == @(centos|oracle7|oracle8|opensuse) ]]; then
     application/x-extension-xht=google-chrome.desktop
 EOF
 else
-  sed -i 's@exec -a "$0" "$HERE/chrome" "$\@"@@g' /usr/bin/x-www-browser
+  sed -i 's@exec -a "$0" "$HERE/google-chrome" "$\@"@@g' /usr/bin/x-www-browser
   cat >>/usr/bin/x-www-browser <<EOL
   exec -a "\$0" "\$HERE/chrome" "${CHROME_ARGS}"  "\$@"
 EOL
@@ -91,3 +105,7 @@ mkdir -p /etc/opt/chrome/policies/managed/
 cat >>/etc/opt/chrome/policies/managed/default_managed_policy.json <<EOL
 {"CommandLineFlagSecurityWarningsEnabled": false, "DefaultBrowserSettingEnabled": false}
 EOL
+
+# Cleanup for app layer
+chown -R 1000:0 $HOME
+find /usr/share/ -name "icon-theme.cache" -exec rm -f {} \;

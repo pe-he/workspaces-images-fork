@@ -21,12 +21,16 @@ version=4.12.2
 
 # This path may not be accurate once arm64 support arrives. Specifically I don't know if it will still be under x64
 wget -q https://downloads.slack-edge.com/releases/linux/${version}/prod/x64/slack-${version}-0.1.fc21.x86_64.rpm -O slack.rpm
-if [ "${DISTRO}" == "oracle8" ]; then
+if [[ "${DISTRO}" == @(oracle8|rockylinux9|rockylinux8|oracle9|almalinux9|almalinux8|fedora37|fedora38|fedora39) ]]; then
   dnf localinstall -y slack.rpm
-  dnf clean all
+  if [ -z ${SKIP_CLEAN+x} ]; then
+    dnf clean all
+  fi
 else
   yum localinstall -y slack.rpm
-  yum clean all
+  if [ -z ${SKIP_CLEAN+x} ]; then
+    yum clean all
+  fi
 fi
 rm slack.rpm
 sed -i 's,/usr/bin/slack,/usr/bin/slack --no-sandbox,g' /usr/share/applications/slack.desktop
