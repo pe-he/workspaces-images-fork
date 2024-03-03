@@ -59,6 +59,9 @@
 #                           important as jdk15 removes nashorn which was deprecated
 #                           in JDK11
 #   bamcgill    28/03/2022  Adding Java Check for minimum of 11
+#   admuro      06/10/2022  Validate if graalvm is installed (OCI) and set the path
+#                           as the JAVA_HOME
+#   josmende    01/11/2022  Adding eclipse parsson to the classpath
 ########################################################################
 
 AddVMOption()
@@ -128,6 +131,16 @@ function checkADE {
 }
 
 #
+# if we are in OCI environement, check for JAVA_HOME
+#
+function checkOCI {
+  if [ -f /usr/lib64/graalvm/graalvm22-ee-java17/bin/java ] ; then 
+    JAVA_HOME=/usr/lib64/graalvm/graalvm22-ee-java17
+    PATH="$JAVA_HOME/bin:$PATH"
+  fi
+}
+
+#
 # set up the main arguments for java.
 #
 function setupArgs {
@@ -142,6 +155,7 @@ function setupArgs {
 	AddVMOption -Dapple.awt.UIElement=true
 	AddVMOption -Xms64M
 	AddVMOption -Xmx2G
+    AddVMOption -Xss100m
 	if test "m$(uname -s)" = "mHP-UX"
 	then
 	   AddVMOption -d64
@@ -188,6 +202,7 @@ function setupCPLIST {
 CPLIST="$SQL_HOME/lib/jansi.jar"
 CPLIST="$SQL_HOME/lib/guava-with-lf.jar:$CPLIST"
 CPLIST="$SQL_HOME/lib/antlr-runtime.jar:$CPLIST"
+CPLIST="$SQL_HOME/lib/antlr4-runtime.jar:$CPLIST"
 CPLIST="$SQL_HOME/lib/jline3.jar:$CPLIST"
 CPLIST="$SQL_HOME/lib/orai18n-mapping.jar:$CPLIST"
 CPLIST="$SQL_HOME/lib/jdbcrest.jar:$CPLIST"
@@ -223,15 +238,14 @@ CPLIST="$SQL_HOME/lib/xmlparserv2_sans_jaxp_services.jar:$CPLIST"
 CPLIST="$SQL_HOME/lib/orai18n.jar:$CPLIST"
 CPLIST="$SQL_HOME/lib/commons-logging.jar:$CPLIST"
 CPLIST="$SQL_HOME/lib/xmlparserv2.jar:$CPLIST"
-CPLIST="$SQL_HOME/lib/javax.json-api.jar:$CPLIST"
-CPLIST="$SQL_HOME/lib/javax.json.jar:$CPLIST"
+CPLIST="$SQL_HOME/lib/jakarta.json-api.jar:$CPLIST"
+CPLIST="$SQL_HOME/lib/parsson.jar:$CPLIST"
 
 CPLIST="$SQL_HOME/lib/slf4j-jdk14.jar:$CPLIST"
 CPLIST="$SQL_HOME/lib/slf4j-api.jar:$CPLIST"
 
 #SQLDeveloper file locations (when embedded)
 CPLIST="$SQL_HOME/../modules/oracle.xdk/xmlparserv2.jar:$CPLIST"
-CPLIST="$SQL_HOME/../modules/org.glassfish.javax.json.jar:$CPLIST"
 CPLIST="$SQL_HOME/../jlib/orai18n.jar:$CPLIST"
 CPLIST="$SQL_HOME/../jlib/orai18n-mapping.jar:$CPLIST"
 CPLIST="$SQL_HOME/../jlib/orai18n-utility.jar:$CPLIST"
@@ -643,6 +657,7 @@ function setupTmpFiles {
 
 #setupTmpFiles
 checkADE
+checkOCI
 setupSQLHome
 setupClasspath
 checkCygwin
@@ -650,7 +665,7 @@ checkJavaLocation
 checkLanguageSettings
 setupArgs
 DetectSystemHttpProxySetting
-if [[ "$(jdk_version)" -gt "8" ]]; then
+if [[ "$(jdk_version)" -ge "11" ]]; then
 bootStrap "$@"
 else
         echo

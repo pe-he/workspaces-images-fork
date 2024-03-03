@@ -115,7 +115,7 @@ GetUserHomeDirName()
 
 GetProductVersion()
 {
-    echo "22.2.1"
+    echo "23.1.1"
 }
 
 GetUserConfRootDirName()
@@ -130,7 +130,7 @@ GetCopyrightStartYear()
 
 GetCopyrightEndYear()
 {
-    echo "2021"
+    echo "2023"
 }
 
 GetMinimumMajorJavaVersion()

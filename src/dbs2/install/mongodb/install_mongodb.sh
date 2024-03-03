@@ -2,26 +2,19 @@
 set -ex
 
 apt update
-apt install gnupg
+apt install gnupg curl
 
-wget -qO - https://www.mongodb.org/static/pgp/server-6.0.asc | apt-key add -
+#wget -qO - https://www.mongodb.org/static/pgp/server-6.0.asc | apt-key add -
 
-echo "deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu jammy/mongodb-org/6.0 multiverse" | tee /etc/apt/sources.list.d/mongodb-org-6.0.list
+curl -fsSL https://www.mongodb.org/static/pgp/server-7.0.asc | \
+   sudo gpg -o /usr/share/keyrings/mongodb-server-7.0.gpg \
+   --dearmor
+
+#echo "deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu jammy/mongodb-org/6.0 multiverse" | tee /etc/apt/sources.list.d/mongodb-org-6.0.list
+
+echo "deb [ arch=amd64,arm64 signed-by=/usr/share/keyrings/mongodb-server-7.0.gpg ] https://repo.mongodb.org/apt/ubuntu jammy/mongodb-org/7.0 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-7.0.list
+
 apt update
 apt install -y mongodb-org
 
-# Start Service
 
-# Step 5 Configure MongoDB
-
-# Compass
-wget https://downloads.mongodb.com/compass/mongodb-compass_1.33.1_amd64.deb
-apt install -y libsecret-1-0 libgconf-2-4 libnss3
-apt install -y ./mongodb-compass_*_amd64.deb
-
-rm mongodb-compass_1.33.1_amd64.deb
-
-# Desktop Icon
-cp $INST_SCRIPTS/mongodb/mongodb-compass.desktop /usr/share/applications/
-cp /usr/share/applications/mongodb-compass.desktop $HOME/Desktop/
-chmod +x $HOME/Desktop/mongodb-compass.desktop
