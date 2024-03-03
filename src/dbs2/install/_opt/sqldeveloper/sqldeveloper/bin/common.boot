@@ -7,4 +7,4 @@ ide.product=oracle.sqldeveloper
 oracle.ide.classload.layer=osgi
 ide.mw.relative.home=.
 copyright.year.start=2005
-copyright.year.end=2022
+copyright.year.end=2023

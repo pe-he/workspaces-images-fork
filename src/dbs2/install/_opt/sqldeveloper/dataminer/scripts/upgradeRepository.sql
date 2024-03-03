@@ -39,5 +39,6 @@ END;
 @@upgradeRepo12_2_0_0_3To12_2_0_0_4.sql
 @@upgradeRepo12_2_0_0_4To12_2_0_0_5.sql
 @@upgradeRepo12_2_0_0_5To12_2_0_0_6.sql
+@@upgradeRepo12_2_0_0_6To12_2_0_0_7.sql
 
 EXECUTE dbms_output.put_line('End Data Miner Repository DB Object Upgrade.' || systimestamp);

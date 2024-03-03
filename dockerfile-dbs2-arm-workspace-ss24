@@ -1,0 +1,87 @@
+### MODIFIED
+ARG BASE_TAG="ss24"
+ARG BASE_IMAGE="core-dbs2-jammy"
+FROM peterhertkorn/$BASE_IMAGE:$BASE_TAG
+
+USER root
+
+ENV HOME /home/kasm-default-profile
+ENV STARTUPDIR /dockerstartup
+WORKDIR $HOME
+
+### Envrionment config
+ENV DEBIAN_FRONTEND=noninteractive \
+    SKIP_CLEAN=true \
+    KASM_RX_HOME=$STARTUPDIR/kasmrx \
+    DONT_PROMPT_WSL_INSTALL="No_Prompt_please" \
+    INST_DIR=$STARTUPDIR/install \
+    INST_SCRIPTS="/ubuntu/install/tools/install_tools_deluxe.sh \
+                  /ubuntu/install/misc/install_tools.sh \
+                  /ubuntu/install/chrome/install_chrome.sh \
+#                  /ubuntu/install/chromium/install_chromium.sh \
+                  /ubuntu/install/firefox/install_firefox.sh \
+                  /ubuntu/install/sublime_text/install_sublime_text.sh \
+                  /ubuntu/install/vs_code/install_vs_code.sh \
+#                  /ubuntu/install/nextcloud/install_nextcloud.sh \
+#                  /ubuntu/install/remmina/install_remmina.sh \
+#                  /ubuntu/install/only_office/install_only_office.sh \
+#                  /ubuntu/install/signal/install_signal.sh \
+#                  /ubuntu/install/gimp/install_gimp.sh \
+#                  /ubuntu/install/zoom/install_zoom.sh \
+#                  /ubuntu/install/obs/install_obs.sh \
+#                  /ubuntu/install/ansible/install_ansible.sh \
+#                  /ubuntu/install/terraform/install_terraform.sh \
+#                  /ubuntu/install/telegram/install_telegram.sh \
+#                  /ubuntu/install/thunderbird/install_thunderbird.sh \
+#                  /ubuntu/install/slack/install_slack.sh \
+#                  /ubuntu/install/gamepad_utils/install_gamepad_utils.sh \
+### DBS2  
+                  /dbs2/install/tools/install_tools.sh \
+                  /dbs2/install/jdk/install_jdk.sh \
+                  /dbs2/install/basex/install_basex.sh \
+                  /dbs2/install/redis/install_redis.sh \
+                  /dbs2/install/mongodb/install_mongodb.sh \
+                  /dbs2/install/oracle_sql_developer/install_oracle_sql_developer.sh \
+                  /dbs2/install/cassandra/install_cassandra.sh \
+                  /ubuntu/install/cleanup/cleanup.sh"
+
+# Copy install scripts
+COPY ./src/ $INST_DIR
+
+### DBS2
+### Applications in opt
+COPY ./src/dbs2/install/_opt/sqldeveloper /opt/sqldeveloper/
+RUN chown 1000:0 /opt/sqldeveloper
+
+### Data in home
+#COPY ./src/dbs2/install/_home/.config $HOME/.config
+#COPY ./src/dbs2/install/_home/.local $HOME/.local
+COPY ./src/dbs2/install/_home/.vscode $HOME/.vscode
+COPY ./src/dbs2/install/_home/.sqldeveloper $HOME/.sqldeveloper
+COPY ./src/dbs2/install/_home/basex $HOME/basex
+
+# Run installations
+RUN \
+  for SCRIPT in $INST_SCRIPTS; do \
+    bash ${INST_DIR}${SCRIPT} || exit 1; \
+  done && \
+  $STARTUPDIR/set_user_permission.sh $HOME && \
+  rm -f /etc/X11/xinit/Xclients && \
+  chown 1000:0 $HOME && \
+### MODIFIED
+  mkdir -p /home/mki && \
+  chown -R 1000:0 /home/mki && \
+  rm -Rf ${INST_DIR}
+
+### Sudo
+RUN apt-get update \  
+  && apt-get install -y sudo \
+  && echo 'mki ALL=(ALL) NOPASSWD: ALL' >>/etc/sudoers \
+  && rm -rf /var/lib/apt/list/*
+
+# Userspace Runtime
+ENV HOME /home/mki
+WORKDIR $HOME
+USER 1000
+
+#CMD ["--tail-log"]
