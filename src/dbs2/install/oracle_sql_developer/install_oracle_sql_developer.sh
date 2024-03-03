@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -ex
 
-#mkdir /opt/sqldeveloper
+mkdir /opt/sqldeveloper
 chown -R mki.mki /opt/sqldeveloper
 
 # Desktop Icon

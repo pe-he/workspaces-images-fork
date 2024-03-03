@@ -37,7 +37,7 @@ ENV DEBIAN_FRONTEND=noninteractive \
 #                  /ubuntu/install/gamepad_utils/install_gamepad_utils.sh \
 ### DBS2  
                   /dbs2/install/tools/install_tools.sh \
-                  /dbs2/install/jdk/install_jdk.sh \
+#                  /dbs2/install/jdk/install_jdk.sh \
                   /dbs2/install/basex/install_basex.sh \
                   /dbs2/install/redis/install_redis.sh \
                   /dbs2/install/mongodb/install_mongodb.sh \
@@ -50,14 +50,14 @@ COPY ./src/ $INST_DIR
 
 ### DBS2
 ### Applications in opt
-COPY ./src/dbs2/install/_opt/sqldeveloper /opt/sqldeveloper/
-RUN chown 1000:0 /opt/sqldeveloper
+#COPY ./src/dbs2/install/_opt/sqldeveloper /opt/sqldeveloper/
+#RUN chown 1000:0 /opt/sqldeveloper
 
 ### Data in home
 #COPY ./src/dbs2/install/_home/.config $HOME/.config
 #COPY ./src/dbs2/install/_home/.local $HOME/.local
 COPY ./src/dbs2/install/_home/.vscode $HOME/.vscode
-COPY ./src/dbs2/install/_home/.sqldeveloper $HOME/.sqldeveloper
+#COPY ./src/dbs2/install/_home/.sqldeveloper $HOME/.sqldeveloper
 COPY ./src/dbs2/install/_home/basex $HOME/basex
 
 # Run installations

@@ -52,8 +52,8 @@ COPY ./src/ $INST_DIR
 
 ### DBS2
 ### Applications in opt
-COPY ./src/dbs2/install/_opt/sqldeveloper /opt/sqldeveloper/
-RUN chown 1000:0 /opt/sqldeveloper
+#COPY ./src/dbs2/install/_opt/sqldeveloper /opt/sqldeveloper/
+#RUN chown 1000:0 /opt/sqldeveloper
 
 ### Data in home
 #COPY ./src/dbs2/install/_home/.config $HOME/.config
