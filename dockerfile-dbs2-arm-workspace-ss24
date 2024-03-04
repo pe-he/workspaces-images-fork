@@ -84,4 +84,6 @@ ENV HOME /home/mki
 WORKDIR $HOME
 USER 1000
 
+RUN alias ll='ls -lh'
+
 #CMD ["--tail-log"]
