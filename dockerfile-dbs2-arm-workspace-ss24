@@ -54,7 +54,7 @@ COPY ./src/ $INST_DIR
 #RUN chown 1000:0 /opt/sqldeveloper
 
 ### Data in home
-#COPY ./src/dbs2/install/_home/.config $HOME/.config
+COPY ./src/dbs2/install/_home/.config $HOME/.config
 #COPY ./src/dbs2/install/_home/.local $HOME/.local
 COPY ./src/dbs2/install/_home/.vscode $HOME/.vscode
 COPY ./src/dbs2/install/_home/.sqldeveloper $HOME/.sqldeveloper
