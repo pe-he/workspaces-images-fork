@@ -37,7 +37,7 @@ ENV DEBIAN_FRONTEND=noninteractive \
 #                  /ubuntu/install/gamepad_utils/install_gamepad_utils.sh \
 ### DBS2  
                   /dbs2/install/tools/install_tools.sh \
-#                  /dbs2/install/jdk/install_jdk.sh \
+                  /dbs2/install/jdk/install_jdk.sh \
                   /dbs2/install/basex/install_basex.sh \
                   /dbs2/install/redis/install_redis.sh \
                   /dbs2/install/mongodb/install_mongodb.sh \
@@ -57,7 +57,7 @@ COPY ./src/ $INST_DIR
 #COPY ./src/dbs2/install/_home/.config $HOME/.config
 #COPY ./src/dbs2/install/_home/.local $HOME/.local
 COPY ./src/dbs2/install/_home/.vscode $HOME/.vscode
-#COPY ./src/dbs2/install/_home/.sqldeveloper $HOME/.sqldeveloper
+COPY ./src/dbs2/install/_home/.sqldeveloper $HOME/.sqldeveloper
 COPY ./src/dbs2/install/_home/basex $HOME/basex
 
 # Run installations
@@ -83,7 +83,5 @@ RUN apt-get update \
 ENV HOME /home/mki
 WORKDIR $HOME
 USER 1000
-
-RUN alias ll='ls -lh'
 
 #CMD ["--tail-log"]
