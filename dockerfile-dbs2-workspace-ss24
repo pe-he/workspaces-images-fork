@@ -37,7 +37,7 @@ ENV DEBIAN_FRONTEND=noninteractive \
 #                  /ubuntu/install/gamepad_utils/install_gamepad_utils.sh \
 ### DBS2 
                   /dbs2/install/tools/install_tools.sh \
-                  /dbs2/install/jdk-x64/install_jdk-x86.sh \
+                  /dbs2/install/jdk-x64/install_jdk.sh \
                   /dbs2/install/basex/install_basex.sh \
                   /dbs2/install/redis/install_redis.sh \
                   /dbs2/install/mongodb/install_mongodb.sh \
