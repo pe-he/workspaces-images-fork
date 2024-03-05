@@ -43,7 +43,7 @@ ENV DEBIAN_FRONTEND=noninteractive \
                   /dbs2/install/mongodb/install_mongodb.sh \
 #                  /dbs2/install/mongodb-compass/install_mongodb-compass.sh \
                   /dbs2/install/oracle_sql_developer/install_oracle_sql_developer.sh \
-                  /dbs2/install/neo4j-desktop/install_neo4j-desktop.sh \
+#                  /dbs2/install/neo4j-desktop/install_neo4j-desktop.sh \
                   /dbs2/install/cassandra/install_cassandra.sh \
                   /ubuntu/install/cleanup/cleanup.sh" 
 
